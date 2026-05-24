@@ -1,0 +1,140 @@
+/* ==================== SUBJECT VIEW STYLES ==================== */
+.subject-view {
+    display: none;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+}
+
+.subject-view.active {
+    display: flex;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 20px;
+    flex: 1;
+    padding-top: 20px;
+}
+
+/* Left Sidebar - Units */
+.sidebar-subject {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+.sidebar-subject button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: all .12s;
+}
+
+.sidebar-subject button:hover {
+    background: var(--card2);
+    border-color: var(--muted2);
+    color: var(--text);
+}
+
+#subjectTitle {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+}
+
+.unit-list {
+    margin-top: 8px;
+}
+
+.unit-item {
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .12s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--text);
+}
+
+.unit-item:hover {
+    background: var(--card2);
+}
+
+.unit-item.active {
+    background: var(--card2);
+    font-weight: 600;
+    border-left: 3px solid var(--accent-colour);
+}
+
+.unit-item .emoji {
+    font-size: 17px;
+    opacity: 0.8;
+}
+
+/* Main Content Area */
+.detail-area {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 40px 50px;
+    box-shadow: var(--shadow);
+    min-height: 600px;
+    position: relative;
+}
+
+.subject-accent-bar {
+    height: 5px;
+    border-radius: 6px 6px 0 0;
+    margin: -40px -50px 30px -50px;
+}
+
+.detail-placeholder {
+    text-align: center;
+    padding: 120px 40px;
+    color: var(--muted);
+}
+
+.detail-placeholder h3 {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+/* Right Sidebar */
+.right-sidebar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+/* Dark mode overrides for subject view */
+body.dark .sidebar-subject,
+body.dark .detail-area,
+body.dark .right-sidebar {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
