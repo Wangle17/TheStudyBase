@@ -67,7 +67,7 @@ body{background:#f5f2ed;color:#1c1917;font-family:'Inter',sans-serif;display:fle
 .welcome h2{font-family:'Lora',serif;font-size:20px;font-weight:400}
 .welcome p{font-size:13px;color:var(--muted);max-width:260px;line-height:1.6}
 .detail-content{display:none;max-width:720px}
-.detail-content.on{display:block;animation:up .2s ease}
+.detail-content.on{display:block !important;animation:up .2s ease}
 @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .dh{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border)}
 .dh-name{font-family:'Lora',serif;font-size:26px;font-weight:700;line-height:1.15;margin-bottom:8px}
@@ -205,6 +205,32 @@ body.dark .unit-pill:hover:not(.active){background:var(--card2) !important;borde
 body.dark img:not(.no-invert){filter:invert(0.88) hue-rotate(180deg) brightness(1.15)}
 
 .sync-countdown{font-size:10px;color:var(--muted2);margin-left:4px;font-variant-numeric:tabular-nums}
+
+/* ── New hybrid header ── */
+.hdr-outer{background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:stretch;transition:background .2s,border-color .2s;flex-shrink:0}
+.accent-bar{width:4px;flex-shrink:0}
+.hdr-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.hdr-top{display:flex;align-items:center;padding:0 20px;height:44px;gap:10px}
+.logo-block{display:flex;align-items:center;gap:9px;padding-right:14px;border-right:1px solid var(--border);flex-shrink:0}
+.logo-icon2{width:24px;height:24px;background:var(--text);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:background .2s}
+.logo-text2{font-size:13px;font-weight:700;color:var(--text);font-family:'Lora',Georgia,serif;letter-spacing:-.2px;white-space:nowrap;transition:color .2s}
+.logo-sub-txt{font-size:9px;color:var(--muted2);letter-spacing:.5px;display:block;line-height:1;margin-top:1px}
+.hdr-breadcrumb{display:flex;align-items:center;gap:6px}
+.bc-link{font-size:12px;color:var(--muted2);cursor:pointer;transition:color .12s;text-decoration:none}
+.bc-link:hover{color:var(--muted)}
+.bc-sep{font-size:11px;color:var(--muted2)}
+.bc-current{font-size:12px;font-weight:600;color:var(--text);transition:color .2s}
+.hdr-right-row{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hdr-date-pill{font-size:11px;color:var(--muted);background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;transition:background .2s,border-color .2s,color .2s}
+/* ── Tooltips ── */
+.hdr-ghost{background:none;border:1px solid var(--border);border-radius:5px;padding:4px 7px;font-size:12px;color:var(--text);cursor:pointer;transition:background .12s,border-color .12s,color .2s;line-height:1;display:flex;align-items:center;justify-content:center;font-family:inherit;position:relative}
+.hdr-ghost:hover{background:var(--card2);border-color:var(--muted2)}
+.hdr-ghost::after{content:attr(data-tip);position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);font-size:10px;font-weight:600;white-space:nowrap;padding:4px 9px;border-radius:5px;border:2px solid var(--border2);pointer-events:none;opacity:0;transition:opacity .12s;letter-spacing:.2px;font-family:'Inter',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,0.08);z-index:50}
+.hdr-ghost::before{content:'';position:absolute;top:calc(100% + 1px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:var(--border2);pointer-events:none;opacity:0;transition:opacity .12s;z-index:50}
+.hdr-ghost:hover::after,.hdr-ghost:hover::before{opacity:1}
+
+.hdr-action{background:var(--text);color:var(--card);border:none;border-radius:5px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s,opacity .12s;font-family:inherit}
+.hdr-action:hover{opacity:.82}
 </style>
 </head>
 <body>
@@ -233,22 +259,32 @@ body.dark img:not(.no-invert){filter:invert(0.88) hue-rotate(180deg) brightness(
     signOut(auth).then(() => window.location.href = "login.html");
   };
 </script>
-<div class="topbar">
-  <a href="index.html" class="back-link">← Hub</a>
-  <div class="subj-info">
-    <div class="subj-stripe"></div>
-    <span class="subj-name">Economics</span>
-    <span class="subj-label">notes</span>
-  </div>
-  <div class="topbar-right">
-    <span class="stat-chip"><strong id="stT">0</strong> topics</span>
-    <span class="stat-chip"><strong id="stU">0</strong> units</span>
-    <button onclick="sbSignOut()" title="Sign out" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--muted);line-height:1.5;flex-shrink:0;font-family:'Inter',sans-serif;font-weight:500">⎋ Sign out</button>
-    <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:14px;cursor:pointer;transition:all .15s;color:var(--text);line-height:1;flex-shrink:0">🌙</button>
-    <span id="syncStatus" class="sync-chip"></span>
-    <span id="syncCountdown" class="sync-countdown"></span>
-    <button onclick="syncPull()" title="Sync now" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--muted);line-height:1.5;flex-shrink:0;font-family:'Inter',sans-serif;font-weight:500">⟳ Sync</button>
-    <button class="btn-new" onclick="openModal()">+ New topic</button>
+<div class="hdr-outer">
+  <div class="accent-bar" style="background:#065f46"></div>
+  <div class="hdr-main">
+    <div class="hdr-top">
+      <div class="logo-block">
+        <div class="logo-icon2">📊</div>
+        <div>
+          <div class="logo-text2">StudyBase</div>
+          <span class="logo-sub-txt">SCHOOL REFERENCE</span>
+        </div>
+      </div>
+      <div class="hdr-breadcrumb">
+        <a class="bc-link" href="index.html">Hub</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Economics</span>
+      </div>
+      <div class="hdr-right-row">
+        <span id="syncStatus" style="font-size:11px;color:#15803d;font-weight:600"></span>
+        <span id="syncCountdown" style="font-size:11px;color:var(--muted2);font-variant-numeric:tabular-nums"></span>
+        <button class="hdr-ghost" onclick="syncPull()" title="Sync now" data-tip="Sync now">⟳</button>
+        <button class="hdr-ghost" onclick="sbSignOut()" title="Sign out" data-tip="Sign out">⎋</button>
+        <button class="hdr-ghost" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" data-tip="Dark mode">🌙</button>
+        <button class="hdr-action" onclick="openModal()">+ New topic</button>
+      </div>
+    </div>
+    <div style="display:flex;border-top:1px solid var(--border)"><div style="padding:4px 16px;border-right:1px solid var(--border);font-size:11px;color:var(--muted2)"><strong id="stT" style="color:#065f46">0</strong> topics</div><div style="padding:4px 16px;font-size:11px;color:var(--muted2)"><strong id="stU" style="color:#065f46">0</strong> units</div></div>
   </div>
 </div>
 <div class="app-body">
@@ -412,7 +448,7 @@ function renderList(){
   const el=document.getElementById('topicList');
   el.innerHTML=filtered.length===0
     ?`<div class="sidebar-empty">${q?'No results for "'+esc(q)+'"':'No topics yet.<br>Click <strong>+ New topic</strong> to begin.'}</div>`
-    :filtered.map(t=>`<div class="topic-item${t.id===activeId?' active':''}" onclick="viewTopic(${t.id})">
+    :filtered.map(t=>`<div class="topic-item${t.id==activeId?' active':''}" onclick="viewTopic(${t.id})">
         <div class="ti-name">${esc(t.name)}</div>
         ${t.unit?`<div class="ti-unit">${esc(t.unit)}</div>`:''}
         ${t.definition?`<div class="ti-prev">${esc(t.definition.substring(0,55))}…</div>`:''}
@@ -434,7 +470,7 @@ function setUnit(u){activeUnit=u;renderList();}
 
 function viewTopic(id){
   activeId=id;
-  const t=getTopics().find(x=>x.id===id);
+  const t=getTopics().find(x=>x.id==id);
   if(!t)return;
   renderList();
   document.getElementById('welcomeState').style.display='none';
@@ -470,7 +506,7 @@ function viewTopic(id){
     ${t.examTip?`<div class="section"><div class="section-header"><span class="sh-icon">⚡</span>Exam Tip</div><div class="section-body"><div class="exam-tip">${sanitizeRich(t.examTip)}</div></div></div>`:''}
     <div class="section"><div class="section-header"><span class="sh-icon">🔗</span>Related Terms</div>
       <div class="section-body">${relHtml}</div></div>`;
-  void el.offsetWidth;el.classList.add('on');
+  el.style.display='block';void el.offsetWidth;el.classList.add('on');
 }
 
 function openModal(id){
@@ -479,7 +515,7 @@ function openModal(id){
   document.getElementById('tagsWrap').querySelectorAll('.tag-chip').forEach(e=>e.remove());
   populateSel();
   if(id){
-    const t=getTopics().find(x=>x.id===id);
+    const t=getTopics().find(x=>x.id==id);
     document.getElementById('modalTitle').textContent='Edit topic';
     document.getElementById('fName').value=t.name||'';
     document.getElementById('fUnit').value=t.unit||'';
@@ -567,7 +603,7 @@ function saveTopic(){
 }
 
 function confirmDeleteTopic(id){
-  const t=getTopics().find(x=>x.id===id);
+  const t=getTopics().find(x=>x.id==id);
   pendingAction={type:'topic',id};
   document.getElementById('cTitle').textContent='Delete this topic?';
   document.getElementById('cMsg').textContent='"'+t.name+'" will be permanently removed.';
@@ -585,7 +621,7 @@ function doDelete(){
   if(!pendingAction)return;
   if(pendingAction.type==='topic'){
     saveTopics(getTopics().filter(t=>t.id!==pendingAction.id));
-    if(activeId===pendingAction.id){activeId=null;document.getElementById('welcomeState').style.display='';document.getElementById('detailContent').classList.remove('on');}
+    if(activeId==pendingAction.id){activeId=null;document.getElementById('welcomeState').style.display='';document.getElementById('detailContent').classList.remove('on');}
   }else{
     saveTopics(getTopics().map(t=>t.unit===pendingAction.name?{...t,unit:''}:t));
     saveUnits(getUnits().filter(u=>u!==pendingAction.name));
