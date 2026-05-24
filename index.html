@@ -268,22 +268,101 @@ body.dark .sug-send{background:var(--text);color:#141210}
 <header>
   <div class="wrap">
     <div class="header-inner">
-      <div class="wordmark">
-<div class="wordmark-icon">🎓</div>
-        <div>
-          <h1>StudyBase</h1>
-          <span>School reference</span>
+
+      <!-- Left side: Logo + Branch/Version -->
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="wordmark">
+          <div class="wordmark-icon">🎓</div>
+          <div>
+            <h1>StudyBase</h1>
+            <span>School reference</span>
+          </div>
+        </div>
+
+        <!-- Branch Version Badge -->
+        <div id="branch-badge" style="font-size:11px; color:var(--muted); background:var(--card2); 
+             border:1px solid var(--border); border-radius:20px; padding:4px 12px; white-space:nowrap;">
+          Loading branch...
         </div>
       </div>
+
       <div class="header-date">Today — <strong id="todayDate"></strong></div>
-      <span id="syncCountdownIdx" class="sync-countdown" style="font-size:11px;color:var(--muted2)"></span>
-      <button onclick="manualSync()" title="Sync now" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--muted);line-height:1.5;flex-shrink:0;font-family:'Inter',sans-serif;font-weight:500">⟳ Sync</button>
-<button onclick="openSuggestions()" title="Suggestions" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--muted);line-height:1.5;flex-shrink:0;font-family:'Inter',sans-serif;font-weight:500">📝 Suggestions</button>
-      <button onclick="sbSignOut()" title="Sign out" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;transition:all .15s;color:var(--muted);line-height:1.5;flex-shrink:0;font-family:'Inter',sans-serif;font-weight:500">⎋ Sign out</button>
-    <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:15px;cursor:pointer;transition:all .15s;color:var(--text);line-height:1">🌙</button>
+      
+      <span id="syncCountdownIdx" class="sync-countdown"></span>
+      
+      <button onclick="manualSync()" title="Sync now" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);">⟳ Sync</button>
+      
+      <button onclick="openSuggestions()" title="Suggestions" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);">📝 Suggestions</button>
+      
+      <button onclick="sbSignOut()" title="Sign out" style="background:none;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);">⎋ Sign out</button>
+      
+      <button id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" style="background:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:15px;cursor:pointer;color:var(--text);">🌙</button>
+
     </div>
   </div>
 </header>
+
+<!-- Branch Version Loader - Put this RIGHT AFTER </header> -->
+<script>
+async function loadBranchVersion() {
+    const badge = document.getElementById('branch-badge');
+    if (!badge) return;
+
+    try {
+        const res = await fetch('BranchVersion.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('File not found');
+
+        const data = await res.json();
+        
+        // Default values
+        const branch = data.branch || 'unknown';
+        const version = data.version || '0.0.0';
+        const colorMode = data.colour || data.color || 'other-blue';
+
+        // Color mapping
+        let colorStyle = '';
+        switch(colorMode) {
+            case 'dev-red':
+                colorStyle = 'color:#e11d48; border-color:#fda4af; background:#fee2e2;';
+                break;
+            case 'bug-orange':
+                colorStyle = 'color:#c2410c; border-color:#fdba74; background:#ffedd5;';
+                break;
+            case 'main-green':
+                colorStyle = 'color:#15803d; border-color:#86efac; background:#f0fdf4;';
+                break;
+            case 'other-blue':
+            default:
+                colorStyle = 'color:#1e40af; border-color:#93c5fd; background:#eff6ff;';
+                break;
+        }
+
+        badge.innerHTML = `
+            <strong>${branch}</strong> • v${version}
+        `;
+        badge.style.cssText = `
+            font-size:11px; 
+            background:var(--card2); 
+            border:1px solid var(--border); 
+            border-radius:20px; 
+            padding:4px 12px; 
+            white-space:nowrap;
+            ${colorStyle}
+        `;
+
+        console.log('✅ BranchVersion loaded:', data);
+        
+    } catch (err) {
+        console.error('Failed to load BranchVersion.json', err);
+        badge.innerHTML = `<strong>dev</strong> • local`;
+        badge.style.cssText = `font-size:11px; color:#e11d48; background:#fee2e2; border:1px solid #fda4af; border-radius:20px; padding:4px 12px;`;
+    }
+}
+
+// Run the function
+window.addEventListener('load', loadBranchVersion);
+loadBranchVersion();
+</script>
 
 <div class="wrap" style="margin-top:28px">
 
@@ -312,35 +391,35 @@ body.dark .sug-send{background:var(--text);color:#141210}
       <div class="sec-title">Subjects</div>
       <div class="subjects-grid">
 
-        <a href="notes.html?subject=eco" class="subj-card eco">
+        <a href="economics.html" class="subj-card eco">
           <div class="subj-emoji">📊</div>
           <div class="subj-count" id="cnt-eco">0</div>
           <div class="subj-name">Economics</div>
           <div class="subj-meta" id="meta-eco">No topics yet</div>
         </a>
 
-        <a href="notes.html?subject=eng" class="subj-card eng">
+        <a href="english.html" class="subj-card eng">
           <div class="subj-emoji">📖</div>
           <div class="subj-count" id="cnt-eng">0</div>
           <div class="subj-name">English</div>
           <div class="subj-meta" id="meta-eng">No topics yet</div>
         </a>
 
-        <a href="notes.html?subject=math" class="subj-card mth">
+        <a href="maths.html" class="subj-card mth">
           <div class="subj-emoji">📐</div>
           <div class="subj-count" id="cnt-mth">0</div>
           <div class="subj-name">Maths</div>
           <div class="subj-meta" id="meta-mth">No topics yet</div>
         </a>
 
-        <a href="notes.html?subject=tmb" class="subj-card tmb">
+        <a href="timber.html" class="subj-card tmb">
           <div class="subj-emoji">🪵</div>
           <div class="subj-count" id="cnt-tmb">0</div>
           <div class="subj-name">Timber</div>
           <div class="subj-meta" id="meta-tmb">No topics yet</div>
         </a>
 
-        <a href="notes.html?subject=eng2" class="subj-card eng2">
+        <a href="engineering.html" class="subj-card eng2">
           <div class="subj-emoji">⚙️</div>
           <div class="subj-count" id="cnt-eng2">0</div>
           <div class="subj-name">Engineering</div>
@@ -431,11 +510,11 @@ body.dark .sug-send{background:var(--text);color:#141210}
 
 <script>
   const subjects = [
-    {key:'eco',  name:'Economics',   color:'#15803d', param:'eco'},
-    {key:'eng',  name:'English',     color:'#9f1239', param:'eng'},
-    {key:'mth',  name:'Maths',       color:'#1d4ed8', param:'math'},
-    {key:'tmb',  name:'Timber',      color:'#92400e', param:'tmb'},
-    {key:'eng2', name:'Engineering', color:'#0f4c81', param:'eng2'},
+    {key:'eco',  name:'Economics',   color:'#15803d', file:'economics.html'},
+    {key:'eng',  name:'English',     color:'#9f1239', file:'english.html'},
+    {key:'mth',  name:'Maths',       color:'#1d4ed8', file:'maths.html'},
+    {key:'tmb',  name:'Timber',      color:'#92400e', file:'timber.html'},
+    {key:'eng2', name:'Engineering', color:'#0f4c81', file:'engineering.html'},
   ];
 
   document.getElementById('todayDate').textContent =
@@ -473,7 +552,7 @@ body.dark .sug-send{background:var(--text);color:#141210}
     document.getElementById('recentList').innerHTML = recent.length===0
       ? '<div class="empty-note">No topics added yet.</div>'
       : recent.map(t=>`
-          <a class="feed-item" href="notes.html?subject=${t.sParam}#${t.id}" style="text-decoration:none;display:flex;align-items:flex-start;gap:10px;padding:9px 6px;border-bottom:1px solid var(--border);border-radius:4px;margin:0 -6px;transition:background .12s" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">
+          <a class="feed-item" href="${t.sFile}#${t.id}" style="text-decoration:none;display:flex;align-items:flex-start;gap:10px;padding:9px 6px;border-bottom:1px solid var(--border);border-radius:4px;margin:0 -6px;transition:background .12s" onmouseover="this.style.background='var(--card2)'" onmouseout="this.style.background=''">
             <div class="feed-dot" style="background:${t.sColor};flex-shrink:0;margin-top:5px"></div>
             <div>
               <div class="feed-name">${t.name}</div>
