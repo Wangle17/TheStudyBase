@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyBase</title>
+<!-- Favicon -->
+<link rel="icon" href="icon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -250,8 +253,8 @@ async function loadBranchVersion(){
     badge.innerHTML = `<strong>${branch}</strong> · v${version}`;
     badge.style.cssText = `font-size:11px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:${color}`;
   }catch(e){
-    badge.innerHTML = '<strong>dev</strong> · local';
-    badge.style.cssText = 'font-size:11px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:#e11d48';
+    badge.innerHTML = '<strong>dev</strong> · Local';
+    badge.style.cssText = 'font-size:11px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;white-space:nowrap;color:#e0c200';
   }
 }
 window.addEventListener('load', loadBranchVersion);
