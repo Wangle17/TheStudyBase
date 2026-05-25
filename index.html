@@ -54,6 +54,15 @@ body{background:#f5f2ed;color:#1c1917;font-family:'Inter',sans-serif;min-height:
 /* SIDEBAR */
 .side-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
 .side-card:last-child{margin-bottom:0}
+
+/* COLLAPSIBLE SECTION TITLE */
+.sec-title-collapsible{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:0;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:color .12s}
+.sec-title-collapsible:hover{color:var(--muted)}
+.sec-title-collapsible .collapse-arrow{font-size:13px;color:var(--muted2);transition:transform .2s;display:inline-block;line-height:1;flex-shrink:0}
+.sec-title-collapsible.collapsed .collapse-arrow{transform:rotate(-90deg)}
+.collapsible-body{overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:2000px;opacity:1}
+.collapsible-body.collapsed{max-height:0;opacity:0;pointer-events:none}
+
 .feed-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .feed-item:last-child{border-bottom:none;padding-bottom:0}
 .feed-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
@@ -293,12 +302,24 @@ loadBranchVersion();
     <!-- Right sidebar -->
     <div>
       <div class="side-card">
-        <div class="sec-title">Recently Added</div>
-        <div id="recentList"><div class="empty-note">No topics added yet.</div></div>
+        <div class="sec-title-collapsible" id="recentToggle" onclick="toggleSection('recent')" title="Click to collapse">
+          <span>Recently Added</span>
+          <span class="collapse-arrow">▾</span>
+        </div>
+        <div class="collapsible-body" id="recentBody" style="margin-top:0">
+          <div style="height:12px"></div>
+          <div id="recentList"><div class="empty-note">No topics added yet.</div></div>
+        </div>
       </div>
       <div class="side-card">
-        <div class="sec-title">Units Overview</div>
-        <div id="unitsList"><div class="empty-note">No units created yet.</div></div>
+        <div class="sec-title-collapsible" id="unitsToggle" onclick="toggleSection('units')" title="Click to collapse">
+          <span>Units Overview</span>
+          <span class="collapse-arrow">▾</span>
+        </div>
+        <div class="collapsible-body" id="unitsBody" style="margin-top:0">
+          <div style="height:12px"></div>
+          <div id="unitsList"><div class="empty-note">No units created yet.</div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -398,6 +419,38 @@ document.getElementById('darkToggle').onclick=function(){
   this.textContent=on?'☀️':'🌙';
 };
 
+// ── Collapsible sidebar sections ──
+const COLLAPSE_KEY='studybase_collapsed_sections';
+function getCollapsed(){
+  try{return JSON.parse(localStorage.getItem(COLLAPSE_KEY)||'{}');}catch(e){return {};}
+}
+function saveCollapsed(obj){localStorage.setItem(COLLAPSE_KEY,JSON.stringify(obj));}
+
+function applyCollapse(section,collapsed){
+  const toggle=document.getElementById(section+'Toggle');
+  const body=document.getElementById(section+'Body');
+  if(!toggle||!body) return;
+  if(collapsed){
+    toggle.classList.add('collapsed');
+    body.classList.add('collapsed');
+  } else {
+    toggle.classList.remove('collapsed');
+    body.classList.remove('collapsed');
+  }
+}
+
+function toggleSection(section){
+  const state=getCollapsed();
+  state[section]=!state[section];
+  saveCollapsed(state);
+  applyCollapse(section,state[section]);
+}
+
+function initCollapsibles(){
+  const state=getCollapsed();
+  ['recent','units'].forEach(s=>applyCollapse(s,!!state[s]));
+}
+
 // ── Calendar state ──
 const TODAY=new Date();
 let calYear=TODAY.getFullYear(), calMonth=TODAY.getMonth();
@@ -416,6 +469,7 @@ function init(){
     o.value=s.name; o.textContent=s.name; sel.appendChild(o);
   });
 
+  initCollapsibles();
   renderSubjects();
   renderStats();
   renderSidebar();
