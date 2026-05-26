@@ -16,7 +16,7 @@ html,body{height:100%;overflow:hidden}
 body{background:#f5f2ed;color:#1c1917;font-family:'Inter',sans-serif;display:flex;flex-direction:column;font-size:14px}
 :root{
   --card:#fff;--card2:#faf8f5;--border:#e2ddd7;--border2:#d4cec7;
-  --text:#1c1917;--muted:#78716c;--muted2:#a8a29e;
+  --text:#1c1917;--muted:#6c7778;--muted2:#8199a4;
   --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
   --accent:#0f4c81;--ac-l:rgba(15,76,129,.07);--ac-b:rgba(15,76,129,.2);
 }
@@ -199,6 +199,15 @@ body.dark .detail-panel{background:#141210!important}
 body.dark .section{background:var(--card)!important}
 body.dark .section-header{background:var(--card2)!important}
 body.dark .btn-act,.rich-btn{background:var(--card2)!important}
+
+/* ── Guest mode ── */
+#guest-border{display:none;position:fixed;inset:0;pointer-events:none;z-index:9000;box-shadow:inset 0 0 0 3px #9ca3af;}
+#guest-nudge{display:none;position:fixed;bottom:20px;right:20px;z-index:9001;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;width:210px;box-shadow:0 4px 20px rgba(0,0,0,.12);animation:nudge-in .25s cubic-bezier(.34,1.4,.64,1);}
+@keyframes nudge-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+body.guest-mode #btnNewTopic{display:none !important;}
+body.guest-mode .btn-act.danger{display:none !important;}
+body.guest-mode .btn-act:not(.safe){pointer-events:none;opacity:.4;cursor:default;}
+body.guest-mode:not(.dark) .hdr-outer{background:#eeebe6;border-bottom-color:#d4cec7;}
 body.dark .modal{background:var(--card)!important;box-shadow:0 20px 60px rgba(0,0,0,.5)!important}
 body.dark .confirm-box{background:var(--card)!important;box-shadow:0 20px 60px rgba(0,0,0,.5)!important}
 body.dark .topic-item:hover{background:var(--card2)!important}
@@ -226,9 +235,26 @@ body.dark img:not(.no-invert){filter:invert(.88) hue-rotate(180deg) brightness(1
   };
   const auth = getAuth(initializeApp(cfg));
   onAuthStateChanged(auth, user => {
-    if(!user){ window.location.href = "login.html"; }
+    const isGuest = sessionStorage.getItem('studybase_guest') === '1';
+    if (user) {
+      sessionStorage.removeItem('studybase_guest');
+    } else if (isGuest) {
+      window.isGuest = true;
+      document.body.classList.add('guest-mode');
+      document.getElementById('guest-border').style.display = 'block';
+      document.getElementById('guest-nudge').style.display = 'block';
+    } else {
+      window.location.href = "login.html";
+    }
   });
-  window.sbSignOut = () => signOut(auth).then(() => window.location.href = "login.html");
+  window.sbSignOut = () => {
+    if (sessionStorage.getItem('studybase_guest') === '1') {
+      sessionStorage.removeItem('studybase_guest');
+      window.location.href = "login.html";
+      return;
+    }
+    signOut(auth).then(() => window.location.href = "login.html");
+  };
 </script>
 
 <!-- Header (populated by JS once subject is known) -->
@@ -605,6 +631,7 @@ function viewTopic(id){
 
 // ── Modal ──
 function openModal(id){
+  if(window.isGuest){ showToast('Sign in to add or edit topics','info'); return; }
   editId = id || null;
   tempTags = [];
   document.getElementById('kpList').innerHTML = '';
@@ -939,5 +966,14 @@ if(resolveSubject()){
   startCountdown();
 }
 </script>
+
+<!-- Guest overlays -->
+<div id="guest-border"></div>
+<div id="guest-nudge">
+  <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Viewing as guest</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Sign in to add and edit topics.</div>
+  <button onclick="window.location.href='login.html'" style="background:var(--text);color:var(--card);border:none;border-radius:6px;padding:7px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s">Sign In</button>
+  <button onclick="document.getElementById('guest-nudge').style.display='none'" style="background:none;border:none;color:var(--muted2);font-size:11px;cursor:pointer;margin-top:6px;width:100%;font-family:'Inter',sans-serif">Dismiss</button>
+</div>
 </body>
 </html>

@@ -90,6 +90,12 @@ body.dark .login-title,
 body.dark .login-sub {
   color: var(--text) !important;
 }
+.or-divider{display:flex;align-items:center;gap:10px;margin:14px 0 6px;color:var(--muted2);font-size:12px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-ghost{width:100%;background:none;border:1px solid var(--border);border-radius:7px;padding:10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;margin-top:0}
+.btn-ghost:hover{background:var(--card2);color:var(--text);border-color:var(--border2)}
+body.dark .btn-ghost{border-color:var(--border);color:var(--muted)}
+body.dark .btn-ghost:hover{background:var(--card2);color:var(--text)}
 </style>
 </head>
 <body>
@@ -125,6 +131,8 @@ body.dark .login-sub {
     </div>
 
     <button class="btn-primary" id="mainBtn" onclick="handleSignIn()">Sign In</button>
+    <div class="or-divider">or</div>
+    <button class="btn-ghost" onclick="enterGuest()">Continue as Guest</button>
   </div>
 </div>
 
@@ -147,7 +155,10 @@ body.dark .login-sub {
   const auth = getAuth(app);
 
   onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = 'index.html';
+    if (user) {
+      sessionStorage.removeItem('studybase_guest');
+      window.location.href = 'index.html';
+    }
   });
 
   // === DARK MODE (Consistent with index.html) ===
@@ -206,6 +217,11 @@ body.dark .login-sub {
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter') handleSignIn();
   });
+
+  window.enterGuest = function() {
+    sessionStorage.setItem('studybase_guest', '1');
+    window.location.href = 'index.html';
+  };
 </script>
 </body>
 </html>
