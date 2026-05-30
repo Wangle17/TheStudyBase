@@ -2,6 +2,7 @@
 let SUBJECT = null; // the matched entry from subjectsData
 let ST = '';        // localStorage key for topics
 let SU = '';        // localStorage key for units
+let SP = '';        // localStorage key for pinned topics
 let DEF_UNITS = []; // default units if none saved
 
 function resolveSubject(){
@@ -17,6 +18,7 @@ function resolveSubject(){
   }
   ST = SUBJECT.storageKey || (id + '_topics');
   SU = SUBJECT.unitsKey   || (id + '_units');
+  SP = SUBJECT.pinnedKey  || (id + '_pinned_topics');
   return true;
 }
 
@@ -60,8 +62,9 @@ function toggleDark(){
 
 // ── Storage helpers ──
 const CELL_LIMIT = 45000;
-const getTopics = () => { try{ return JSON.parse(localStorage.getItem(ST)||'[]'); }catch(e){ return []; } };
-const getUnits  = () => { try{ return JSON.parse(localStorage.getItem(SU)||JSON.stringify(DEF_UNITS)); }catch(e){ return []; } };
+const getTopics  = () => { try{ return JSON.parse(localStorage.getItem(ST)||'[]'); }catch(e){ return []; } };
+const getUnits   = () => { try{ return JSON.parse(localStorage.getItem(SU)||JSON.stringify(DEF_UNITS)); }catch(e){ return []; } };
+const getPinned  = () => { try{ return JSON.parse(localStorage.getItem(SP)||'[]'); }catch(e){ return []; } };
 
 const saveTopics = t => {
   localStorage.setItem(ST, JSON.stringify(t));
@@ -74,6 +77,20 @@ const saveUnits = u => {
   if(JSON.stringify(u).length > CELL_LIMIT){ setSyncStatus('warn'); }
   else{ syncPush(SU, u); setSyncStatus('ok'); }
 };
+const savePinned = p => {
+  localStorage.setItem(SP, JSON.stringify(p));
+};
+
+// ── Pin / unpin a topic ──
+function togglePinTopic(id){
+  id = Number(id);
+  const pinned = getPinned();
+  const idx = pinned.indexOf(id);
+  if(idx === -1){ pinned.push(id); }
+  else { pinned.splice(idx, 1); }
+  savePinned(pinned);
+  renderList();
+}
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -84,6 +101,7 @@ let activeId = null, editId = null, activeUnit = 'all', tempTags = [], pendingAc
 function renderList(){
   const q = document.getElementById('searchInput').value.toLowerCase();
   const topics = getTopics();
+  const pinned = getPinned();
   const filtered = topics.filter(t => {
     const mu = activeUnit === 'all' || t.unit === activeUnit;
     const mq = !q || t.name.toLowerCase().includes(q) ||
@@ -91,16 +109,28 @@ function renderList(){
       (t.unit||'').toLowerCase().includes(q) ||
       (t.relatedTerms||[]).some(r => r.toLowerCase().includes(q));
     return mu && mq;
-  }).sort((a,b) => a.name.localeCompare(b.name));
+  }).sort((a,b) => {
+    const ap = pinned.includes(a.id), bp = pinned.includes(b.id);
+    if(ap && !bp) return -1;
+    if(!ap && bp) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
   document.getElementById('topicList').innerHTML = filtered.length === 0
     ? `<div class="sidebar-empty">${q ? 'No results for "'+esc(q)+'"' : 'No topics yet.<br>Click <strong>+ New topic</strong> to begin.'}</div>`
-    : filtered.map(t => `
-        <div class="topic-item${t.id==activeId?' active':''}" onclick="viewTopic(${t.id})">
-          <div class="ti-name">${esc(t.name)}</div>
+    : filtered.map(t => {
+        const isPinned = pinned.includes(t.id);
+        return `
+        <div class="topic-item${t.id==activeId?' active':''}${isPinned?' pinned':''}" onclick="viewTopic(${t.id})">
+          <div class="ti-top">
+            <div class="ti-name">${isPinned?'<span class="ti-pin-icon"></span>':''}${esc(t.name)}</div>
+            
+            <button class="ti-pin-btn" onclick="event.stopPropagation();togglePinTopic(${t.id})" title="${isPinned?'Unpin':'Pin'}">${isPinned?'★':'☆'}</button>
+          </div>
           ${t.unit ? `<div class="ti-unit">${esc(t.unit)}</div>` : ''}
           ${t.definition ? `<div class="ti-prev">${esc(t.definition.substring(0,55))}…</div>` : ''}
-        </div>`).join('');
+        </div>`;
+      }).join('');
 
   document.getElementById('stT').textContent = topics.length;
   document.getElementById('stU').textContent = getUnits().length;

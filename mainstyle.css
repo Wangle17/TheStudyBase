@@ -31,7 +31,7 @@ body{background:#f5f2ed;color:#1c1917;font-family:'Inter',sans-serif;min-height:
 .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:500}
 
 /* ── SUBJECTS ── */
-.sec-title{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sec-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .subjects-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .subj-card{display:block;text-decoration:none;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px 20px;position:relative;overflow:hidden;transition:all .15s;box-shadow:var(--shadow)}
 .subj-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer}
