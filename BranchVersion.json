@@ -1,6 +1,8 @@
 {
   "date": "2026-05-26",
   "branch": "AI-Analyser",
+  "branch": "Analyser",
   "version": "3.0.0",
   "colour": "bug"
+  "colour": "main"
 }
